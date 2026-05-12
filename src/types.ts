@@ -7,11 +7,13 @@
 
 // TODO: Buat tipe untuk fungsi-fungsi yang akan digunakan
 
-export interface TodoItem {
+export interface Todo {
   id: number;
   task: string;
   completed: boolean;
-  status: TodoStatus;
+  createdAt: string;
 }
+
+export type TodoInput = Omit<Todo, 'id' | 'completed' | 'createdAt'>;
 
 export type TodoStatus = 'active' | 'done';

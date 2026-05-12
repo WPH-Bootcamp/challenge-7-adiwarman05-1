@@ -7,31 +7,26 @@
 
 // TODO: Buat fungsi untuk memastikan input dari user adalah string yang valid
 
-import { TodoItem } from './types.js';
+import { Todo } from './types';
 
-/**
- * Type Guard untuk memeriksa apakah sebuah objek adalah TodoItem yang valid
- */
-export function isTodoItem(obj: any): obj is TodoItem {
+export function isTodo(obj: any): obj is Todo {
   return (
-    obj !== null &&
     typeof obj === 'object' &&
+    obj !== null &&
     typeof obj.id === 'number' &&
     typeof obj.task === 'string' &&
-    typeof obj.completed === 'boolean'
+    typeof obj.completed === 'boolean' &&
+    typeof obj.createdAt === 'string'
   );
 }
 
-/**
- * Helper untuk membersihkan dan memvalidasi string input
- */
-export function sanitizeInput(text: string): string {
-  return text.trim();
+export function isTodoArray(arr: any): arr is Todo[] {
+  return Array.isArray(arr) && arr.every(isTodo);
 }
 
-/**
- * Helper untuk memberikan visualisasi status tugas yang rapi
- */
-export function formatTodoStatus(completed: boolean): string {
-  return completed ? '[✓] Selesai' : '[ ] Belum Selesai';
+export function formatDate(dateString: string): string {
+  return new Date(dateString).toLocaleDateString('id-ID', {
+    hour: '2-digit',
+    minute: '2-digit',
+  });
 }

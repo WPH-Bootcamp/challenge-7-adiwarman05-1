@@ -11,32 +11,31 @@ import * as path from 'path';
 
 // TODO: Buat fungsi untuk inisialisasi storage (buat file kosong jika belum ada)
 
-import { TodoItem } from './types.js';
-import { sanitizeInput } from './utils.js';
+import { Todo } from './types';
+import { isTodoArray } from './utils';
 
-let todos: TodoItem[] = [];
+const FILE_PATH = path.join(__dirname, '../todo.json');
 
-export function getTodos(): TodoItem[] {
-  return todos;
+export function loadTodos(): Todo[] {
+  try {
+    if (!fs.existsSync(FILE_PATH)) {
+      return [];
+    }
+    const data = fs.readFileSync(FILE_PATH, 'utf-8');
+    if (!data.trim()) return [];
+    
+    const parsed = JSON.parse(data);
+    return isTodoArray(parsed) ? parsed : [];
+  } catch (error) {
+    console.error('Gagal membaca database file, memuat data kosong.');
+    return [];
+  }
 }
 
-export function addTodoItem(taskName: string): TodoItem {
-  const newItem: TodoItem = {
-    id: todos.length > 0 ? Math.max(...todos.map(t => t.id)) + 1 : 1,
-    task: sanitizeInput(taskName),
-    completed: false
-  };
-  todos.push(newItem);
-  return newItem;
-}
-
-export function updateTodoStatus(completedIds: number[]): void {
-  todos = todos.map(t => ({
-    ...t,
-    completed: completedIds.includes(t.id)
-  }));
-}
-
-export function deleteTodoItem(id: number): void {
-  todos = todos.filter(t => t.id !== id);
+export function saveTodos(todos: Todo[]): void {
+  try {
+    fs.writeFileSync(FILE_PATH, JSON.stringify(todos, null, 2), 'utf-8');
+  } catch (error) {
+    console.error('Gagal menyimpan perubahan ke file.');
+  }
 }
